@@ -8,7 +8,8 @@ TensorFlow implementation of GhostNet: More Features from Cheap Operations.
 The performance is measured using below two CNN architectures.
 
 <div align="center">
-  <img src="./figures/cnn.png" width="600">  
+  <p><img src="./figures/blocks.png" width="650"></p>
+  <p><img src="./figures/models.png" width="500"></p>  
   <p>Two Convolutional Neural Networks for experiment.</p>
 </div>
 

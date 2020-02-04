@@ -60,14 +60,19 @@ class GhostNet(object):
         ghost3_2 = self.ghost_block(input=ghost3_1, \
             num_inputs=40, num_expention=240, num_outputs=80, type=2, name="ghost3_2")
 
-        [n, h, w, c] = ghost3_2.shape
-        fullcon_in = tf.compat.v1.reshape(ghost3_2, shape=[self.batch_size, h*w*c], name="fullcon_in")
-        fullcon1 = self.fully_connected(input=fullcon_in, num_inputs=int(h*w*c), \
-            num_outputs=512, activation="relu", name="fullcon1")
-        fullcon2 = self.fully_connected(input=fullcon1, num_inputs=512, \
-            num_outputs=self.num_class, activation=None, name="fullcon2")
+        global_avg = tf.reduce_mean(ghost3_2, axis=(1, 2))
+        [n, c] = global_avg.shape
+        conv2_in = tf.compat.v1.reshape(global_avg, shape=[self.batch_size, 1, 1, c], name="conv2_in")
+        conv2 = self.conv2d(input=conv2_in, stride=1, padding='SAME', \
+            filter_size=[1, 1, 80, 80*8], \
+            activation="relu", name="conv2")
 
-        return fullcon2
+        [n, h, w, c] = conv2.shape
+        fullcon_in = tf.compat.v1.reshape(conv2, shape=[self.batch_size, h*w*c], name="fullcon_in")
+        fullcon1 = self.fully_connected(input=fullcon_in, num_inputs=int(h*w*c), \
+            num_outputs=self.num_class, activation=None, name="fullcon1")
+
+        return fullcon1
 
     def ghost_block(self, input, num_inputs=16, num_expention=48, num_outputs=16, type=1, name=""):
 
